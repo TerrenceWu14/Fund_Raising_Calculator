@@ -1,3 +1,6 @@
+import pandas
+
+
 # checks that the number the user entered is greater than 0
 # and whether it is the correct number type
 def num_check(question, error, num_type):
@@ -50,12 +53,88 @@ def not_blank(question):
             return response
 
 
-# Main routine goes here
-get_int = num_check("How many do you need?",
-                    "Please enter a number more than 0 "
-                    "with no decimal points\n",
-                    int)
+# currency formatting function
+def currency(x):
+    return f"${x:.2f}"
 
-get_cost = num_check("How many do you need?",
-                     "Please enter a number more than 0\n",
-                     float)
+
+# creates the table for all the expenses
+def get_expenses(var_fixed):
+    # sets up dictionaries and lists
+
+    item_list = []
+    quant_list = []
+    price_list = []
+    cost_list = []
+
+    variable_dict = {
+        "Item": item_list,
+        "Quantity": quant_list,
+        "Price": price_list,
+        "Cost": cost_list,
+
+    }
+
+    while True:
+        # gets the item, quantity, price and cost of each item
+        item = not_blank("Item: ")
+
+        # breaks out of the loop if the user chooses to end early
+        if item.lower() == "xxx":
+            break
+
+        # gets the price, cost and quantities
+        if var_fixed == "variable":
+            quantity = num_check("Quantity: "
+                                 , "Please enter an whole number:", int)
+        else:
+            quantity = 1
+
+        price = num_check("Price per item: ", "Please enter a number greater than 0:", float)
+
+        cost = quantity * price
+
+        # appends the inputted values into their lists
+        item_list.append(item)
+        quant_list.append(quantity)
+        price_list.append(price)
+        cost_list.append(cost)
+
+    # sets up the table of data
+    expense_frame = pandas.DataFrame(variable_dict)
+    expense_frame = expense_frame.set_index('Item')
+
+    # currency formatting (uses currency function)
+    add_dollars = ['Price', 'Cost']
+
+    # finds subtotal
+    sub_total = expense_frame['Cost'].sum()
+
+    # adds the currency formatting to the strings in the list
+    for var_item in add_dollars:
+        expense_frame[var_item] = expense_frame[var_item].apply(currency)
+
+    return [expense_frame, sub_total]
+
+
+# main routine
+
+# get variable expenses (e.g. products like apples)
+variable_expenses = get_expenses("variable")
+variable_frame = variable_expenses[0]
+variable_sub = variable_expenses[1]
+
+# gets fixed expenses (e.g. stalls/rent)
+fixed_expenses = get_expenses("fixed")
+fixed_frame = fixed_expenses[0]
+fixed_sub = fixed_expenses[1]
+
+print("***** Variable Costs *****")
+print(variable_frame)
+print(f"Variable Subtotal: ${variable_sub:.2f}")
+
+print("***** Fixed Costs *****")
+print(fixed_frame)
+
+print("-------------------------")
+print(f"Fixed Subtotal: ${fixed_sub:.2f}")
