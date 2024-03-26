@@ -4,7 +4,7 @@ import re
 # checks that the user typed yes or no
 def yes_no(question):
     while True:
-        response = input(question)
+        response = input(question).lower
 
         if response == "y" or response == "yes":
             return "yes"
@@ -18,7 +18,7 @@ def yes_no(question):
 
 
 # calculates the profit goal
-def profit_goal():
+def profit_goal(total_cost):
     while True:
         # asks the user for the profit goal
         response = input("Profit Goal? ")
@@ -29,8 +29,25 @@ def profit_goal():
 
         # if the response matches the allowed pattern, returns response
         if re.match(allowed, response):
-            print("Thanks")
-            return ""
+
+            # converts the percentage the user inputted into a number
+            if response.startswith("$"):
+
+                # removes the $ sign
+                response = rstrip('$')
+
+                print(response)
+
+                # converts the response to a number
+                target_profit = float(response[:1])
+
+            # converts the percentage the user inputted into a number
+            elif response.endswith("%"):
+                target_profit = total_cost * (float(response[:-1]) / 100)
+            else:
+                target_profit = float(response)
+
+            return target_profit
 
         # else sends the user back to the start of the loop
         else:
@@ -39,7 +56,7 @@ def profit_goal():
 
 all_cost = 200
 
-profit_goal = profit_goal()
+profit_goal = profit_goal(all_cost)
 print(profit_goal)
 
 #
