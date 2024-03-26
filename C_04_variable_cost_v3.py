@@ -41,7 +41,7 @@ def currency(x):
 
 
 # creates the table for all the expenses
-def get_expenses():
+def get_expenses(var_fixed):
     # sets up dictionaries and lists
 
     item_list = []
@@ -81,11 +81,12 @@ def get_expenses():
 
     # currency formatting (uses currency function)
     add_dollars = ['Price', 'Cost']
+    sub_total = expense_frame['Cost'].sum()
     # adds the currency formatting to the strings in the list
     for var_item in add_dollars:
         expense_frame[var_item] = expense_frame[var_item].apply(currency)
 
-    return expense_frame
+    return [expense_frame, sub_total]
 
 
 # main routine
@@ -93,9 +94,13 @@ def get_expenses():
 # gets the product name
 product_name = not_blank("Product Name: ")
 
-expenses = get_expenses()
+variable_expenses = get_expenses("variable")
+variable_frame = variable_expenses[0]
+variable_sub = variable_expenses[1]
 
 print()
 print(f"----- {product_name} -----")
 print()
-print(expenses)
+print(variable_frame)
+print()
+print(f"$ {variable_sub}")
