@@ -1,4 +1,6 @@
 import pandas
+import re
+import math
 
 
 # checks that the number the user entered is greater than 0
@@ -83,8 +85,7 @@ def get_expenses(var_fixed):
 
         # gets the price, cost and quantities
         if var_fixed == "variable":
-            quantity = num_check("Quantity: "
-                                 , "Please enter an whole number:", int)
+            quantity = num_check("Quantity: ", "Please enter an whole number:", int)
         else:
             quantity = 1
 
@@ -115,6 +116,11 @@ def get_expenses(var_fixed):
     return [expense_frame, sub_total]
 
 
+# rounding function
+def round_up(amount, round_to):
+    return int(math.ceil(amount / round_to)) * round_to
+
+
 # prints expense frames
 def expense_print(heading, frame, subtotal):
     print()
@@ -123,6 +129,42 @@ def expense_print(heading, frame, subtotal):
     print()
     print(f"{heading} Costs: ${subtotal:.2f}")
     return ""
+
+
+# calculates the profit goal
+def profit_goal(total_cost):
+    while True:
+        # asks the user for the profit goal
+        response = input("Profit Goal? ")
+
+        # the allowed string pattern (allows only integers above 0
+        # with $ at the start or %$ at the end)
+        allowed = r'^[$]?[1-9]\d*(?:\.\d+)?[%$]?$'
+
+        # if the response matches the allowed pattern, returns response
+        if re.match(allowed, response):
+
+            # gets the number part of the response, ignores all surrounding characters
+            numeric_part = re.search(r'\d*\.?\d+', response).group()
+
+            # converts the percentage the user inputted into a number
+            if response.startswith("$"):
+
+                # converts the response to a number
+                target_profit = float(numeric_part)
+
+            # converts the percentage the user inputted into a number
+            elif response.endswith("%"):
+                target_profit = total_cost * (float(numeric_part) / 100)
+
+            else:
+                target_profit = float(numeric_part)
+
+            return target_profit
+
+        # else sends the user back to the start of the loop
+        else:
+            print("Please enter a valid response (a %, a number above 0 or e.g. $500)")
 
 
 # main routine
@@ -149,6 +191,11 @@ if have_fixed == "yes":
     fixed_frame = fixed_expenses[0]
     fixed_sub = fixed_expenses[1]
 
+# gets the total costs
+all_costs = variable_sub + fixed_sub
+
+# gets the profit target
+profit_target = profit_goal(all_costs)
 
 # print(f"***** Fund Raising - {product_name}")
 
@@ -157,4 +204,14 @@ expense_print("Variable", variable_frame, variable_sub)
 
 if have_fixed == "yes":
     # prints the table of data for fixed costs
-    expense_print("Fixed", fixed_frame, fixed_sub)
+    expense_print("Fixed", fixed_frame[['Cost']], fixed_sub)
+
+print()
+print(f"***** Total Costs: ${all_costs:.2f} *****")
+print()
+
+print()
+print("***** Profit and Sales Targets *****")
+print(f"Profit Target: ${profit_target:.2f}")
+print(f"Total Sales: ${all_costs + profit_target:.2f}")
+print()
