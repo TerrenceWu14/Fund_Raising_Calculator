@@ -4,15 +4,12 @@ import re
 # checks that the user typed yes or no
 def yes_no(question):
     while True:
-        response = input(question).lower
+        response = input(question).lower()
 
         if response == "y" or response == "yes":
             return "yes"
-
         elif response == "n" or response == "no":
             return "no"
-
-        # prints the error message
         else:
             print("Please enter yes or no\n")
 
@@ -30,22 +27,20 @@ def profit_goal(total_cost):
         # if the response matches the allowed pattern, returns response
         if re.match(allowed, response):
 
+            # gets the number part of the response, ignores all surrounding characters
+            numeric_part = re.search(r'\d*\.?\d+', response).group()
+
             # converts the percentage the user inputted into a number
             if response.startswith("$"):
 
-                # removes the $ sign
-                response = rstrip('$')
-
-                print(response)
-
                 # converts the response to a number
-                target_profit = float(response[:1])
+                target_profit = float(numeric_part)
 
             # converts the percentage the user inputted into a number
             elif response.endswith("%"):
-                target_profit = total_cost * (float(response[:-1]) / 100)
+                target_profit = total_cost * (float(numeric_part[:-1]) / 100)
             else:
-                target_profit = float(response)
+                target_profit = float(numeric_part)
 
             return target_profit
 
