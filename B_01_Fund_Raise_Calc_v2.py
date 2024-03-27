@@ -83,11 +83,15 @@ def get_expenses(var_fixed):
         if item.lower() == "xxx":
             break
 
+        print()
+
         # gets the price, cost and quantities
         if var_fixed == "variable":
             quantity = num_check("Quantity: ", "Please enter an whole number:", int)
         else:
             quantity = 1
+
+        print()
 
         price = num_check("Price per item: ", "Please enter a number greater than 0:", float)
 
@@ -168,7 +172,13 @@ def profit_goal(total_cost):
 
 
 # main routine
-# product_name = not_blank("What is your product name?")
+product_name = not_blank("What is your product name?")
+print()
+how_many = num_check("How many items will you be producing? ",
+                     "The number of items must be a whole"
+                     "number more than 0", int)
+
+print()
 
 # get variable expenses (e.g. products like apples)
 print("Please enter your variable (for example:"
@@ -190,12 +200,25 @@ if have_fixed == "yes":
     fixed_expenses = get_expenses("fixed")
     fixed_frame = fixed_expenses[0]
     fixed_sub = fixed_expenses[1]
+else:
+    fixed_sub = 0
 
 # gets the total costs
 all_costs = variable_sub + fixed_sub
 
 # gets the profit target
 profit_target = profit_goal(all_costs)
+
+# calculates total sales needed to reach gaol
+sales_needed = all_costs + profit_target
+
+# asks user for rounding
+round_to = num_check("Round to nearest...? $",
+                     "Can't be 0", int)
+
+# calculates recommended price
+selling_price = sales_needed / how_many
+recommended_price = round_up(selling_price, round_to)
 
 # print(f"***** Fund Raising - {product_name}")
 
@@ -206,12 +229,39 @@ if have_fixed == "yes":
     # prints the table of data for fixed costs
     expense_print("Fixed", fixed_frame[['Cost']], fixed_sub)
 
-print()
-print(f"***** Total Costs: ${all_costs:.2f} *****")
-print()
+# print()
+# print(f"***** Total Costs: ${all_costs:.2f} *****")
+# print()
+#
+# print()
+# print("***** Profit and Sales Targets *****")
+# print(f"Profit Target: ${profit_target:.2f}")
+# print(f"Total Sales: ${all_costs + profit_target:.2f}")
+# print()
+#
+#
+# print()
+# print("***** Pricing *****")
+# print(f"Minimum Price: ${selling_price:.2f}")
+# print(f"Recommended Price ${recommended_price}")
 
-print()
-print("***** Profit and Sales Targets *****")
-print(f"Profit Target: ${profit_target:.2f}")
-print(f"Total Sales: ${all_costs + profit_target:.2f}")
-print()
+# change dataframe to string (so it can be written to a txt file)
+variable_txt = pandas.DataFrame.to_string(variable_frame)
+fixed_txt = pandas.DataFrame.to_string(fixed_frame)
+
+to_write = [product_name, variable_txt, fixed_txt, profit_target,
+            recommended_price]
+
+
+# write to file
+# create file to hold data(add .txt extension)
+file_name = f"{product_name}.txt"
+text_file = open(file_name, "w+")
+
+# heading
+for item in to_write:
+    text_file.write(item)
+    text_file.write("\n\n")
+
+# close file
+text_file.close()
