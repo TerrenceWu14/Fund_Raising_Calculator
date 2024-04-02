@@ -234,32 +234,36 @@ round_to = num_check("Round to nearest...? $",
 selling_price = sales_needed / how_many
 recommended_price = round_up(selling_price, round_to)
 
-print(f"***** Fund Raising - {product_name}")
+heading = f"***** Fund Raising - {product_name} *****"
+print(heading)
 
 # prints the table of data for variable costs
 expense_print("Variable", variable_frame, variable_sub)
 
 if have_fixed == "yes":
+
     # prints the table of data for fixed costs
     expense_print("Fixed", fixed_frame[['Cost']], fixed_sub)
 
-print()
-print("***** Profit and Sales Targets *****")
-print(f"Profit Target: ${profit_target:.2f}")
-print(f"Total Sales: ${all_costs + profit_target:.2f}")
-print()
+profit_and_sales = f"***** Profit and Sales Targets *****" \
+                   f"\nProfit Target: ${profit_target:.2f}" \
+                   f"\nTotal Sales: ${all_costs + profit_target:.2f}"
+
+pricing = f"\nMinimum Price: ${selling_price:.2f}" \
+          f"\nRecommended Price ${recommended_price:.2f}"
 
 print()
-print("***** Pricing *****")
-print(f"Minimum Price: ${selling_price:.2f}")
-print(f"Recommended Price ${recommended_price}")
+print(profit_and_sales)
+print(pricing)
+print()
 
 # change dataframe to string (so it can be written to a txt file)
+# if the frame isn't a dataframe it sets it to ""
 variable_txt = variable_frame.to_string() if isinstance(variable_frame, pandas.DataFrame) else ""
 fixed_txt = fixed_frame.to_string() if isinstance(fixed_frame, pandas.DataFrame) else ""
 
-to_write = [product_name, variable_txt, fixed_txt, profit_target,
-            recommended_price]
+to_write = [heading, variable_txt, fixed_txt, profit_and_sales,
+            pricing]
 
 # write to file
 # create file to hold data(add .txt extension)
