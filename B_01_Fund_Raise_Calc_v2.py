@@ -203,6 +203,7 @@ print("Please enter your variable (for example: products) costs below: ")
 variable_expenses = get_expenses("variable")
 variable_frame = variable_expenses[0]
 variable_sub = variable_expenses[1]
+variable_sub_txt = f"\n*** Fixed Subtotal: {variable_sub} ***"
 print()
 
 have_fixed = yes_no("Do you have fixed costs (yes or no)?")
@@ -213,7 +214,10 @@ if have_fixed == "yes":
     fixed_expenses = get_expenses("fixed")
     fixed_frame = fixed_expenses[0]
     fixed_sub = fixed_expenses[1]
+    fixed_sub_txt = f"\n*** Fixed Subtotal: {fixed_sub} ***"
+
 else:
+    fixed_sub_txt = ""
     fixed_sub = 0
     fixed_frame = ""
 
@@ -235,6 +239,9 @@ selling_price = sales_needed / how_many
 recommended_price = round_up(selling_price, round_to)
 
 heading = f"***** Fund Raising - {product_name} *****"
+variable_cost_heading = "===== Variable Costs ===== \n"
+fixed_cost_heading = "===== Fixed Costs =====\n"
+
 print(heading)
 
 # prints the table of data for variable costs
@@ -245,12 +252,12 @@ if have_fixed == "yes":
     # prints the table of data for fixed costs
     expense_print("Fixed", fixed_frame[['Cost']], fixed_sub)
 
-profit_and_sales = f"***** Profit and Sales Targets *****" \
-                   f"\nProfit Target: ${profit_target:.2f}" \
-                   f"\nTotal Sales: ${all_costs + profit_target:.2f}"
+profit_and_sales = f"===== Profit and Sales Targets =====" \
+                   f"Profit Target: ${profit_target:.2f}" \
+                   f"Total Sales: ${all_costs + profit_target:.2f}"
 
-pricing = f"\nMinimum Price: ${selling_price:.2f}" \
-          f"\nRecommended Price ${recommended_price:.2f}"
+pricing = f"Minimum Price: ${selling_price:.2f}" \
+          f"\n===== Recommended Price ${recommended_price:.2f} ====="
 
 print()
 print(profit_and_sales)
@@ -262,8 +269,10 @@ print()
 variable_txt = variable_frame.to_string() if isinstance(variable_frame, pandas.DataFrame) else ""
 fixed_txt = fixed_frame.to_string() if isinstance(fixed_frame, pandas.DataFrame) else ""
 
-to_write = [heading, variable_txt, fixed_txt, profit_and_sales,
+to_write = [heading, variable_cost_heading, variable_txt, variable_sub_txt, fixed_cost_heading, fixed_txt,
+            fixed_sub_txt, profit_and_sales,
             pricing]
+
 
 # write to file
 # create file to hold data(add .txt extension)
